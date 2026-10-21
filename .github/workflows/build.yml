@@ -1,0 +1,50 @@
+name: Build patch
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+      - name: Install Android platform
+        run: sdkmanager 'platforms;android-36'
+      - name: Download verified build dependency
+        run: ./prepare-deps.sh
+      - name: Build and test
+        run: ./gradlew :patches:build :extension:test --no-daemon
+      - name: Checksum patch
+        working-directory: patches/build/libs
+        run: sha256sum newx-web-search-*.mpp > SHA256SUMS
+      - name: Upload patch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: newx-web-search
+          path: |
+            patches/build/libs/newx-web-search-*.mpp
+            patches/build/libs/SHA256SUMS
+          if-no-files-found: error
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: test-reports
+          path: |
+            patches/build/reports/tests/test/
+            extension/build/reports/tests/test/
+          if-no-files-found: ignore
