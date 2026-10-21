@@ -21,7 +21,7 @@ tasks.processResources {
 }
 tasks.jar {
     manifest.attributes(
-        "Name" to "NewX Web Search",
+        "Name" to "Twitter Web Search",
         "Description" to "Replace Ask Grok in post text selection with Android web search",
         "Version" to project.version,
         "License" to "GPL-3.0-or-later",
@@ -50,7 +50,7 @@ val patchDex = tasks.register<JavaExec>("patchDex") {
 }
 val bundle = tasks.register<Zip>("bundle") {
     dependsOn(patchDex)
-    archiveFileName = "newx-web-search-${project.version}.mpp"
+    archiveFileName = "twitter-web-search-${project.version}.mpp"
     destinationDirectory = layout.buildDirectory.dir("libs")
     from(tasks.jar.map { zipTree(it.archiveFile) })
     from(layout.buildDirectory.dir("dex"))

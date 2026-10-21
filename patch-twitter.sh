@@ -10,6 +10,6 @@ if [[ -e "$2" ]]; then
   exit 2
 fi
 java -Xmx2g -jar deps/morphe-desktop-1.15.0-all.jar patch \
-  --patches patches/build/libs/newx-web-search-1.0.0.mpp \
+  --patches patches/build/libs/twitter-web-search-1.0.0.mpp \
   --exclusive --enable 'NewX: Web search selected text' \
   --unsigned --out "$2" "$1"

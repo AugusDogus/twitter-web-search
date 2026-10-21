@@ -1,5 +1,5 @@
 pluginManagement {
     repositories { gradlePluginPortal(); mavenCentral() }
 }
-rootProject.name = "newx-web-search"
+rootProject.name = "twitter-web-search"
 include(":patches", ":extension")
