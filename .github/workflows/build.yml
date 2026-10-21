@@ -3,6 +3,7 @@ name: Build patch
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -29,6 +30,19 @@ jobs:
         run: ./prepare-deps.sh
       - name: Build and test
         run: ./gradlew :patches:build :extension:test --no-daemon
+      - name: Validate release version
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo 'Release tags must have the form v1.2.3.' >&2
+            exit 1
+          fi
+          if [[ ! -f "patches/build/libs/twitter-web-search-${RELEASE_TAG#v}.mpp" ]]; then
+            echo 'Release tag does not match the built patch version. Update build.gradle.kts before tagging.' >&2
+            exit 1
+          fi
       - name: Checksum patch
         working-directory: patches/build/libs
         run: sha256sum twitter-web-search-*.mpp > SHA256SUMS
@@ -49,3 +63,28 @@ jobs:
             patches/build/reports/tests/test/
             extension/build/reports/tests/test/
           if-no-files-found: ignore
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Download tested patch
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: twitter-web-search
+          path: release
+      - name: Publish release
+        working-directory: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          sha256sum --check SHA256SUMS
+          gh release create "$RELEASE_TAG" \
+            "twitter-web-search-${RELEASE_TAG#v}.mpp" SHA256SUMS \
+            --verify-tag --title "Twitter Web Search $RELEASE_TAG" --generate-notes

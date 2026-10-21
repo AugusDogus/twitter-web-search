@@ -14,6 +14,17 @@ The patch script also accepts APKM bundles. It produces an **unsigned APK for in
 
 Build dependencies come from public release assets and Maven repositories. No GitHub credentials are required. The pinned Morphe Desktop 1.15.0 dependency supplies the Patcher 1.12.0 API used to build this bundle. The bundle also imported and applied successfully in Morphe Manager 1.35.0. The MPP includes desktop classes, Android DEX, and a separate app extension DEX.
 
+## Releases
+
+Push a tag such as `v1.0.0` matching the version in `build.gradle.kts`. The workflow builds and tests the patch, verifies the version, then publishes a GitHub Release containing the `.mpp` and `SHA256SUMS`. Only the release job has repository write access.
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Pushes to `main` and pull requests produce development artifacts in Actions without publishing a release. For future versions, also update the bundle filename in `patch-twitter.sh`.
+
 ## How it matches
 
 The resolver finds the `text_selection_action_ask_grok` resource and the corresponding `Menu.add` call in an `ActionMode.Callback2`. It derives the menu ID, follows that ID's switch arm to the selected callback field, then finds the constructor assignment to that field. Both targets must resolve uniquely before mutation.

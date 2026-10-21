@@ -3,7 +3,7 @@
 <p align="center">Select text. Search the web.</p>
 
 <p align="center">
-  <a href="https://github.com/AugusDogus/twitter-web-search/actions/workflows/build.yml">Download</a> ·
+  <a href="https://github.com/AugusDogus/twitter-web-search/releases/latest">Download</a> ·
   <a href="docs/development.md">Development</a> ·
   <a href="VALIDATION.md">Tested versions</a>
 </p>
@@ -17,7 +17,7 @@ A [Morphe](https://github.com/MorpheApp/morphe-manager) patch that replaces **As
 
 ## Install
 
-1. Download **twitter-web-search** from a successful [build](https://github.com/AugusDogus/twitter-web-search/actions/workflows/build.yml) and unzip it. GitHub sign-in is required.
+1. Download the `.mpp` from the [latest release](https://github.com/AugusDogus/twitter-web-search/releases/latest).
 2. In Morphe, open **Sources → Add → Local** and select the `.mpp`.
 3. Select Twitter, enable **NewX: Web search selected text**, then patch and install. Use Expert mode to combine it with Piko.
 
